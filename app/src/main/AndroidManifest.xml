@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BrewBuyJavaProject">
         <activity
-            android:name=".MainActivity"
+            android:name=".BrewBuyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
