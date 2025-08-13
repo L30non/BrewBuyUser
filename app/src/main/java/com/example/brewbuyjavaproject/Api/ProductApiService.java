@@ -7,7 +7,7 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface ProductApi {
+public interface ApiService {
     @GET("products")
     Call<List<Product>> getProducts();
 
