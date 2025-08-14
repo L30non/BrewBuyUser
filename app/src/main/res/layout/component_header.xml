@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="@color/white"
+    android:elevation="4dp">
+
+    <!-- App Logo and Name -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/ivAppLogo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_coffee"
+            android:contentDescription="App Logo" />
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="BrewCraft"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_color" />
+
+    </LinearLayout>
+
+    <!-- Header Icons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Search Icon -->
+        <ImageView
+            android:id="@+id/ivSearch"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_search"
+            android:contentDescription="Search"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Notifications Icon -->
+        <ImageView
+            android:id="@+id/ivNotifications"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_notifications"
+            android:contentDescription="Notifications"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Cart Icon with Badge -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:id="@+id/ivCart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_shopping_cart"
+                android:contentDescription="Cart"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/tvCartBadge"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="end|top"
+                android:background="@drawable/badge_background"
+                android:text="0"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <!-- Profile Icon -->
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_person"
+            android:contentDescription="Profile"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</LinearLayout>

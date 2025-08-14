@@ -1,70 +1,90 @@
-package com.example.brewbuyjavaproject.Adapter;
+// app/src/main/java/com/example/coffeeshop/ui/products/ProductAdapter.java
+package com.example.brewbuyjavaproject.ui.products;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.brewbuyjavaproject.R;
 import com.example.brewbuyjavaproject.Model.Product;
+
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
+    private List<Product> productList;
+    private OnProductClickListener listener;
 
-    private List<Product> products;
-    private Context context;
-    private OnProductActionListener listener;
-
-    public interface OnProductActionListener {
-        void onEdit(Product product);
-        void onDelete(Product product);
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
+        void onAddToCartClick(Product product);
     }
 
-    public ProductAdapter(Context context, List<Product> products, OnProductActionListener listener) {
-        this.context = context;
-        this.products = products;
+    public ProductAdapter(List<Product> productList, OnProductClickListener listener) {
+        this.productList = productList;
         this.listener = listener;
     }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_product, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
         return new ProductViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        Product product = products.get(position);
-        holder.tvName.setText(product.getName());
-        holder.tvDesc.setText(product.getDescription());
-        holder.tvPrice.setText("$" + product.getPrice());
-        holder.tvQty.setText("Qty: " + product.getQuantity());
-
-        holder.btnEdit.setOnClickListener(v -> listener.onEdit(product));
-        holder.btnDelete.setOnClickListener(v -> listener.onDelete(product));
+        Product product = productList.get(position);
+        holder.bind(product);
     }
 
     @Override
     public int getItemCount() {
-        return products.size();
+        return productList.size();
     }
 
-    static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvDesc, tvPrice, tvQty;
-        Button btnEdit, btnDelete;
+    class ProductViewHolder extends RecyclerView.ViewHolder {
+        private ImageView ivProductImage;
+        private TextView tvProductName, tvProductPrice, tvProductDescription;
+        private Button btnAddToCart;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvDesc = itemView.findViewById(R.id.tvDescription);
-            tvPrice = itemView.findViewById(R.id.tvPrice);
-            tvQty = itemView.findViewById(R.id.tvQuantity);
-            btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            ivProductImage = itemView.findViewById(R.id.ivProductImage);
+            tvProductName = itemView.findViewById(R.id.tvProductName);
+            tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
+            tvProductDescription = itemView.findViewById(R.id.tvProductDescription);
+            btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
+        }
+
+        public void bind(Product product) {
+            tvProductName.setText(product.getName());
+            tvProductPrice.setText("$" + product.getPrice());
+            tvProductDescription.setText(product.getDescription());
+
+            // Load image (using placeholder for now)
+            Glide.with(itemView.getContext())
+                    .load(product.getImageUrl())
+                    .placeholder(R.drawable.ic_coffee)
+                    .into(ivProductImage);
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onProductClick(product);
+                }
+            });
+
+            btnAddToCart.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAddToCartClick(product);
+                }
+            });
         }
     }
 }
