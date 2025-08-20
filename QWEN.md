@@ -205,6 +205,213 @@ No content
 - 200: Success
 - 404: Product not found
 
+## Order Management
+
+All order endpoints require authentication with a valid JWT token.
+
+### Get All Orders
+
+**Endpoint**: `GET /api/orders`
+
+**Response**:
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "orderItems": [
+      {
+        "id": 1,
+        "orderId": 1,
+        "productId": 1,
+        "quantity": 2,
+        "price": 19.99
+      }
+    ],
+    "orderDate": "2023-01-01T00:00:00",
+    "totalAmount": 39.98,
+    "paymentMethod": "CREDIT_CARD",
+    "shippingAddress": "123 Main St, City, Country",
+    "orderStatus": "PENDING"
+  }
+]
+```
+
+**Status Codes**:
+- 200: Success
+
+### Get Order by ID
+
+**Endpoint**: `GET /api/orders/{id}`
+
+**Response**:
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "orderItems": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "productId": 1,
+      "quantity": 2,
+      "price": 19.99
+    }
+  ],
+  "orderDate": "2023-01-01T00:00:00",
+  "totalAmount": 39.98,
+  "paymentMethod": "CREDIT_CARD",
+  "shippingAddress": "123 Main St, City, Country",
+  "orderStatus": "PENDING"
+}
+```
+
+**Status Codes**:
+- 200: Success
+- 404: Order not found
+
+### Create Order
+
+**Endpoint**: `POST /api/orders`
+
+**Request Body**:
+```json
+{
+  "userId": 1,
+  "orderItems": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "price": 19.99
+    }
+  ],
+  "totalAmount": 39.98,
+  "paymentMethod": "CREDIT_CARD",
+  "shippingAddress": "123 Main St, City, Country"
+}
+```
+
+**Response**:
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "orderItems": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "productId": 1,
+      "quantity": 2,
+      "price": 19.99
+    }
+  ],
+  "orderDate": "2023-01-01T00:00:00",
+  "totalAmount": 39.98,
+  "paymentMethod": "CREDIT_CARD",
+  "shippingAddress": "123 Main St, City, Country",
+  "orderStatus": "PENDING"
+}
+```
+
+**Status Codes**:
+- 200: Success
+- 400: Validation error
+
+### Update Order
+
+**Endpoint**: `PUT /api/orders/{id}`
+
+**Request Body**:
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "orderItems": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "productId": 1,
+      "quantity": 2,
+      "price": 19.99
+    }
+  ],
+  "orderDate": "2023-01-01T00:00:00",
+  "totalAmount": 39.98,
+  "paymentMethod": "CREDIT_CARD",
+  "shippingAddress": "123 Main St, City, Country",
+  "orderStatus": "CONFIRMED"
+}
+```
+
+**Response**:
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "orderItems": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "productId": 1,
+      "quantity": 2,
+      "price": 19.99
+    }
+  ],
+  "orderDate": "2023-01-01T00:00:00",
+  "totalAmount": 39.98,
+  "paymentMethod": "CREDIT_CARD",
+  "shippingAddress": "123 Main St, City, Country",
+  "orderStatus": "CONFIRMED"
+}
+```
+
+**Status Codes**:
+- 200: Success
+- 404: Order not found
+- 400: Validation error
+
+### Delete Order
+
+**Endpoint**: `DELETE /api/orders/{id}`
+
+**Response**:
+No content
+
+**Status Codes**:
+- 200: Success
+- 404: Order not found
+
+### Get Orders by Status
+
+**Endpoint**: `GET /api/orders/status/{status}`
+
+**Response**:
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "orderItems": [
+      {
+        "id": 1,
+        "orderId": 1,
+        "productId": 1,
+        "quantity": 2,
+        "price": 19.99
+      }
+    ],
+    "orderDate": "2023-01-01T00:00:00",
+    "totalAmount": 39.98,
+    "paymentMethod": "CREDIT_CARD",
+    "shippingAddress": "123 Main St, City, Country",
+    "orderStatus": "PENDING"
+  }
+]
+```
+
+**Status Codes**:
+- 200: Success
+
 ## Data Models
 
 ### User
@@ -231,6 +438,29 @@ No content
   "description": "string",
   "price": 19.99,
   "quantity": 100
+}
+```
+
+### Order
+
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "orderItems": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "productId": 1,
+      "quantity": 2,
+      "price": 19.99
+    }
+  ],
+  "orderDate": "2023-01-01T00:00:00",
+  "totalAmount": 39.98,
+  "paymentMethod": "CREDIT_CARD",
+  "shippingAddress": "123 Main St, City, Country",
+  "orderStatus": "PENDING"
 }
 ```
 
@@ -277,6 +507,24 @@ public interface ApiService {
     
     @DELETE("api/products/{id}")
     Call<Void> deleteProduct(@Path("id") Long id);
+    
+    @GET("api/orders")
+    Call<List<Order>> getOrders();
+    
+    @GET("api/orders/{id}")
+    Call<Order> getOrder(@Path("id") Long id);
+    
+    @POST("api/orders")
+    Call<Order> createOrder(@Body Order order);
+    
+    @PUT("api/orders/{id}")
+    Call<Order> updateOrder(@Path("id") Long id, @Body Order order);
+    
+    @DELETE("api/orders/{id}")
+    Call<Void> deleteOrder(@Path("id") Long id);
+    
+    @GET("api/orders/status/{status}")
+    Call<List<Order>> getOrdersByStatus(@Path("status") String status);
 }
 ```
 
@@ -304,6 +552,16 @@ curl -X POST http://localhost:8080/api/auth/login \
 
 # Get products (requires authentication)
 curl -X GET http://localhost:8080/api/products \
+  -H "Authorization: Bearer [JWT_TOKEN]"
+  
+# Create an order (requires authentication)
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer [JWT_TOKEN]" \
+  -d '{"userId":1,"orderItems":[{"productId":1,"quantity":2,"price":19.99}],"totalAmount":39.98,"paymentMethod":"CREDIT_CARD","shippingAddress":"123 Main St, City, Country"}'
+
+# Get all orders (requires authentication)
+curl -X GET http://localhost:8080/api/orders \
   -H "Authorization: Bearer [JWT_TOKEN]"
 ```
 

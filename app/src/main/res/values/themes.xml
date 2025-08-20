@@ -13,4 +13,9 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    
+    <!-- Style for circular profile image -->
+    <style name="ShapeAppearance.Material3.Corner.Full" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

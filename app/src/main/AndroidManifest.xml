@@ -16,15 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BrewBuyJavaProject">
         <activity
-            android:name=".ui.search.SearchActivity"
-            android:exported="false"
-            android:theme="@style/Theme.BrewBuyJavaProject"/>
-        <activity
             android:name=".ui.products.ProductDetailActivity"
-            android:exported="false"
-            android:theme="@style/Theme.BrewBuyJavaProject" />
-        <activity
-            android:name=".ui.cart.CartActivity"
             android:exported="false"
             android:theme="@style/Theme.BrewBuyJavaProject" />
         <activity

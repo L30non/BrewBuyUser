@@ -51,6 +51,8 @@ public class SessionManager {
         return pref.getString(KEY_USER_EMAIL, null);
     }
 
+
+
     public String getToken() {
         String token = pref.getString(KEY_JWT_TOKEN, null);
         android.util.Log.d("SessionManager", "Retrieved token from preferences: " + token);

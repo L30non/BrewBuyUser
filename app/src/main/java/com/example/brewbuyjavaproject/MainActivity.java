@@ -13,14 +13,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.brewbuyjavaproject.network.ApiService;
 import com.example.brewbuyjavaproject.network.RetrofitClient;
 import com.example.brewbuyjavaproject.ui.auth.LoginActivity;
-import com.example.brewbuyjavaproject.ui.cart.CartActivity;
+import com.example.brewbuyjavaproject.ui.cart.CartFragment;
 import com.example.brewbuyjavaproject.ui.products.ProductListActivity;
+import com.example.brewbuyjavaproject.ui.profile.ProfileFragment;
+import com.example.brewbuyjavaproject.ui.search.SearchFragment;
 import com.example.brewbuyjavaproject.utils.CartManager;
 import com.example.brewbuyjavaproject.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-         testApiConnection(); // Uncomment this line to test API connection
+        // testApiConnection(); // Uncomment this line to test API connection
 
         initViews();
         setupHeader();
@@ -61,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         setupCategoryCards();
         setupFeaturedProducts();
         updateCartBadge();
+        
+        // Load the home fragment by default
+        loadFragment(new HomeFragment());
     }
 
     private void initViews() {
@@ -76,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         ImageView ivNotifications = header.findViewById(R.id.ivNotifications);
         ImageView ivCart = header.findViewById(R.id.ivCart);
         ImageView ivProfile = header.findViewById(R.id.ivProfile);
-        TextView tvViewAllProducts = findViewById(R.id.tvViewAllProducts);
 
         // Set click listeners for header icons
         ivSearch.setOnClickListener(new View.OnClickListener() {
@@ -106,18 +112,11 @@ public class MainActivity extends AppCompatActivity {
                 handleProfileClick();
             }
         });
-
-        tvViewAllProducts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleViewAllProductsClick();
-            }
-        });
     }
 
     private void handleSearchClick() {
-        Intent intent = new Intent(this, com.example.brewbuyjavaproject.ui.search.SearchActivity.class);
-        startActivity(intent);
+        loadFragment(new SearchFragment());
+        bottomNavigationView.setSelectedItemId(R.id.nav_search);
     }
 
     private void handleNotificationsClick() {
@@ -126,30 +125,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleCartClick() {
-        Intent intent = new Intent(this, CartActivity.class);
-        startActivity(intent);
+        loadFragment(new CartFragment());
+        bottomNavigationView.setSelectedItemId(R.id.nav_cart);
     }
 
     private void handleProfileClick() {
-        showProfileMenu();
+        loadFragment(new com.example.brewbuyjavaproject.ui.profile.ProfileFragment());
+        bottomNavigationView.setSelectedItemId(R.id.nav_profile);
     }
 
     private void handleViewAllProductsClick() {
         Intent intent = new Intent(this, ProductListActivity.class);
         startActivity(intent);
-    }
-
-    private void showProfileMenu() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Profile Options")
-                .setMessage("Choose an option")
-                .setPositiveButton("Logout", (dialog, which) -> {
-                    logoutUser();
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    dialog.dismiss();
-                })
-                .show();
     }
 
     private void logoutUser() {
@@ -168,18 +155,21 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment fragment = null;
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_home) {
-                    // Already on home screen
-                    return true;
+                    fragment = new HomeFragment();
                 } else if (itemId == R.id.nav_search) {
-                    handleSearchClick();
-                    return true;
+                    fragment = new SearchFragment();
                 } else if (itemId == R.id.nav_cart) {
-                    handleCartClick();
-                    return true;
+                    fragment = new CartFragment();
                 } else if (itemId == R.id.nav_profile) {
-                    handleProfileClick();
+                    fragment = new com.example.brewbuyjavaproject.ui.profile.ProfileFragment();
+                    return true;
+                }
+                
+                if (fragment != null) {
+                    loadFragment(fragment);
                     return true;
                 }
                 return false;
@@ -188,50 +178,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupCategoryCards() {
-        CardView cardCoffeeBeans = findViewById(R.id.cardCoffeeBeans);
-        CardView cardCoffeeMachines = findViewById(R.id.cardCoffeeMachines);
-        CardView cardAccessories = findViewById(R.id.cardAccessories);
-        CardView cardMerchandise = findViewById(R.id.cardMerchandise);
-
-        cardCoffeeBeans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Coffee Beans clicked", Toast.LENGTH_SHORT).show();
-                // TODO: Navigate to coffee beans category
-            }
-        });
-
-        cardCoffeeMachines.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Coffee Machines clicked", Toast.LENGTH_SHORT).show();
-                // TODO: Navigate to coffee machines category
-            }
-        });
-
-        cardAccessories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Accessories clicked", Toast.LENGTH_SHORT).show();
-                // TODO: Navigate to accessories category
-            }
-        });
-
-        cardMerchandise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Merchandise clicked", Toast.LENGTH_SHORT).show();
-                // TODO: Navigate to merchandise category
-            }
-        });
+        // This method is now handled in HomeFragment
     }
 
     private void setupFeaturedProducts() {
-        RecyclerView rvFeaturedProducts = findViewById(R.id.rvFeaturedProducts);
-        rvFeaturedProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-        // Setup featured products adapter here
-        // For now, just create an empty adapter or mock data
+        // This method is now handled in HomeFragment
     }
 
     private void updateCartBadge() {
@@ -252,6 +203,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateCartBadge();
+    }
+
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
     // *** CHANGED: Add this method to MainActivity for debugging ***
