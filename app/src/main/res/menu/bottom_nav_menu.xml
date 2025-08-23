@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_shopping_cart"
         android:title="Cart" />
     <item
-        android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_person"
-        android:title="Profile" />
+        android:id="@+id/nav_order"
+        android:icon="@drawable/ic_coffee_machine"
+        android:title="Order" />
 </menu>

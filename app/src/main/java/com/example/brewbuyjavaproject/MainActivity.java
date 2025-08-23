@@ -22,6 +22,7 @@ import com.example.brewbuyjavaproject.network.ApiService;
 import com.example.brewbuyjavaproject.network.RetrofitClient;
 import com.example.brewbuyjavaproject.ui.auth.LoginActivity;
 import com.example.brewbuyjavaproject.ui.cart.CartFragment;
+import com.example.brewbuyjavaproject.ui.orders.OrderFragment;
 import com.example.brewbuyjavaproject.ui.products.ProductListActivity;
 import com.example.brewbuyjavaproject.ui.profile.ProfileFragment;
 import com.example.brewbuyjavaproject.ui.search.SearchFragment;
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleProfileClick() {
         loadFragment(new com.example.brewbuyjavaproject.ui.profile.ProfileFragment());
-        bottomNavigationView.setSelectedItemId(R.id.nav_profile);
+        bottomNavigationView.setSelectedItemId(R.id.ivProfile);
     }
 
     private void handleViewAllProductsClick() {
@@ -163,9 +164,8 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new SearchFragment();
                 } else if (itemId == R.id.nav_cart) {
                     fragment = new CartFragment();
-                } else if (itemId == R.id.nav_profile) {
-                    fragment = new com.example.brewbuyjavaproject.ui.profile.ProfileFragment();
-                    return true;
+                } else if (itemId == R.id.nav_order) {
+                    fragment = new OrderFragment();
                 }
                 
                 if (fragment != null) {
