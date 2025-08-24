@@ -1,6 +1,8 @@
 // app/src/main/java/com/example/brewbuyjavaproject/Model/Product.java
 package com.example.brewbuyjavaproject.Model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.math.BigDecimal;
 
 public class Product {
@@ -9,7 +11,13 @@ public class Product {
     private String description;
     private BigDecimal price;
     private Integer quantity;
-    private String imageUrl;
+    
+    @SerializedName("imageBase64")
+    private String imageBase64;
+    
+    @SerializedName("imageType")
+    private String imageType;
+    
     private String category;
 
     // Constructors
@@ -39,8 +47,11 @@ public class Product {
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getImageBase64() { return imageBase64; }
+    public void setImageBase64(String imageBase64) { this.imageBase64 = imageBase64; }
+
+    public String getImageType() { return imageType; }
+    public void setImageType(String imageType) { this.imageType = imageType; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
@@ -53,7 +64,8 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", imageBase64='" + imageBase64 + '\'' +
+                ", imageType='" + imageType + '\'' +
                 ", category='" + category + '\'' +
                 '}';
     }

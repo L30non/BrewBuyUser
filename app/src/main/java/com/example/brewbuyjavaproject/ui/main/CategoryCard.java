@@ -34,9 +34,9 @@ public class CategoryCard extends ConstraintLayout {
     private void init() {
         inflate(getContext(), R.layout.category_card, this);
 
-        icon = findViewById(R.id.icon);
-        title = findViewById(R.id.title);
-        description = findViewById(R.id.description);
+//        icon = findViewById(R.id.icon);
+//        title = findViewById(R.id.title);
+//        description = findViewById(R.id.description);
     }
 
     public void setIcon(int iconResId) {
