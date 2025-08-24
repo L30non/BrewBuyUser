@@ -36,6 +36,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private SessionManager sessionManager;
     private CartManager cartManager;
     private TextView tvCartBadge;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if user is logged in first
         sessionManager = new SessionManager(this);
+        Log.d(TAG, "isLoggedIn: " + sessionManager.isLoggedIn());
+        Log.d(TAG, "Token: " + sessionManager.getToken());
+        
         if (!sessionManager.isLoggedIn()) {
             // Redirect to login screen
             Intent intent = new Intent(this, LoginActivity.class);

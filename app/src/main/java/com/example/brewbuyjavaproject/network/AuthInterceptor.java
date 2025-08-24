@@ -31,6 +31,13 @@ public class AuthInterceptor implements Interceptor {
         String token = sessionManager.getToken();
 
         Log.d("AuthInterceptor", "Token from session: " + token);
+        Log.d("AuthInterceptor", "Request URL: " + originalRequest.url());
+        Log.d("AuthInterceptor", "Request method: " + originalRequest.method());
+        
+        // Log request headers
+        for (String name : originalRequest.headers().names()) {
+            Log.d("AuthInterceptor", "Request Header: " + name + " = " + originalRequest.headers().get(name));
+        }
         
         // If token exists, add it to the request
         if (token != null && !token.isEmpty()) {

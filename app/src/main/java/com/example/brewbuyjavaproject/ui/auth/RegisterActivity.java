@@ -110,9 +110,29 @@ public class RegisterActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     User registeredUser = response.body();
                     Log.d(TAG, "Registration successful: " + registeredUser.getUsername());
+                    Log.d(TAG, "User object: " + registeredUser.toString());
+
+                    // Extract token from the User object
+                    String token = registeredUser.getToken();
+                    if (token != null && !token.isEmpty()) {
+                        Log.d(TAG, "Token extracted from User object: " + token);
+                    } else {
+                        Log.e(TAG, "Token not found in User object");
+                    }
+
+                    // Save user session
+                    sessionManager.createLoginSession(
+                            registeredUser.getId() != null ? registeredUser.getId().intValue() : 0,
+                            registeredUser.getUsername(),
+                            registeredUser.getEmail(),
+                            token // Use token from User object
+                    );
+
                     Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                    // Navigate to login or main activity
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                    // Navigate to main activity
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                     finish();
                 } else {
                     try {

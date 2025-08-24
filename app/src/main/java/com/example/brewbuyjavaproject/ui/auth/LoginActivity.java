@@ -18,7 +18,6 @@ import com.example.brewbuyjavaproject.MainActivity;
 import com.example.brewbuyjavaproject.R;
 import com.example.brewbuyjavaproject.Model.User;
 import com.example.brewbuyjavaproject.network.ApiService;
-// *** CHANGED: Fixed import - use correct RetrofitClient method ***
 import com.example.brewbuyjavaproject.network.RetrofitClient;
 import com.example.brewbuyjavaproject.utils.SessionManager;
 
@@ -81,7 +80,6 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d(TAG, "Attempting login with username: " + username);
 
-        // *** CHANGED: Fixed method call - use getApiService() not getApiService(this) ***
         ApiService apiService = RetrofitClient.getApiService(this);
         Call<User> call = apiService.loginUser(loginRequest);
 
@@ -94,22 +92,21 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     User loggedInUser = response.body();
                     Log.d(TAG, "Login successful for user: " + loggedInUser.getUsername());
+                    Log.d(TAG, "User object: " + loggedInUser.toString());
 
-                    // Extract token from response headers
-                    String token = response.headers().get("Authorization");
-                    if (token != null && token.startsWith("Bearer ")) {
-                        token = token.substring(7); // Remove "Bearer " prefix
-                        Log.d(TAG, "Token extracted from header: " + token);
+                    // Extract token from the User object
+                    String token = loggedInUser.getToken();
+                    if (token != null && !token.isEmpty()) {
+                        Log.d(TAG, "Token extracted from User object: " + token);
                     } else {
-                        Log.e(TAG, "Token not found in response headers");
+                        Log.e(TAG, "Token not found in User object");
                     }
 
-                    // *** CHANGED: Fixed SessionManager call - use correct parameter count ***
                     sessionManager.createLoginSession(
                             loggedInUser.getId() != null ? loggedInUser.getId().intValue() : 0,
                             loggedInUser.getUsername(),
                             loggedInUser.getEmail(),
-                            token // Use token from headers
+                            token // Use token from User object
                     );
 
                     Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();

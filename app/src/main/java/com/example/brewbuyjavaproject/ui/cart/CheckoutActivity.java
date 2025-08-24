@@ -3,6 +3,7 @@ package com.example.brewbuyjavaproject.ui.cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,19 +15,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.brewbuyjavaproject.Model.CartItem;
+import com.example.brewbuyjavaproject.Model.Order;
+import com.example.brewbuyjavaproject.Model.OrderItem;
 import com.example.brewbuyjavaproject.R;
+import com.example.brewbuyjavaproject.network.OrderDataManager;
 import com.example.brewbuyjavaproject.utils.CartManager;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
-public class CheckoutActivity extends AppCompatActivity {
+public class CheckoutActivity extends AppCompatActivity implements OrderDataManager.OrderCallback {
+    private static final String TAG = "CheckoutActivity";
     private EditText etShippingAddress, etCardNumber, etCardExpiry, etCardCVV;
     private RadioGroup rgPaymentMethod;
     private TextView tvSubtotal, tvShipping, tvTotal;
     private Button btnPlaceOrder;
     private CartManager cartManager;
     private List<CartItem> cartItems;
+    private OrderDataManager orderDataManager;
+    private BigDecimal totalAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,7 @@ public class CheckoutActivity extends AppCompatActivity {
         initViews();
         setupToolbar();
         cartManager = new CartManager(this);
+        orderDataManager = new OrderDataManager(this);
         cartItems = cartManager.getCartItems();
 
         if (cartItems.isEmpty()) {
@@ -81,11 +91,11 @@ public class CheckoutActivity extends AppCompatActivity {
     private void calculateTotals() {
         BigDecimal subtotal = cartManager.getTotalPrice();
         BigDecimal shipping = new BigDecimal("5.00"); // Fixed shipping cost
-        BigDecimal total = subtotal.add(shipping);
+        totalAmount = subtotal.add(shipping);
 
         tvSubtotal.setText("$" + String.format("%.2f", subtotal));
         tvShipping.setText("$" + String.format("%.2f", shipping));
-        tvTotal.setText("$" + String.format("%.2f", total));
+        tvTotal.setText("$" + String.format("%.2f", totalAmount));
     }
 
     private void setupClickListeners() {
@@ -109,16 +119,16 @@ public class CheckoutActivity extends AppCompatActivity {
 
         String paymentMethod = "";
         if (selectedPaymentMethod == R.id.rbCreditCard) {
-            paymentMethod = "Credit Card";
+            paymentMethod = "CREDIT_CARD";
             if (!validateCardDetails()) {
                 return;
             }
         } else if (selectedPaymentMethod == R.id.rbCashOnDelivery) {
-            paymentMethod = "Cash on Delivery";
+            paymentMethod = "CASH_ON_DELIVERY";
         }
 
-        // Process order (in a real app, you would make an API call here)
-        processOrder(shippingAddress, paymentMethod);
+        // Create order object
+        createOrder(shippingAddress, paymentMethod);
     }
 
     private boolean validateCardDetails() {
@@ -154,23 +164,69 @@ public class CheckoutActivity extends AppCompatActivity {
         return true;
     }
 
-    private void processOrder(String shippingAddress, String paymentMethod) {
+    private void createOrder(String shippingAddress, String paymentMethod) {
         // Show loading
         btnPlaceOrder.setEnabled(false);
         btnPlaceOrder.setText("Processing...");
 
-        // Simulate order processing
-        new android.os.Handler().postDelayed(() -> {
-            // Clear cart
-            cartManager.clearCart();
+        // Create order items from cart items
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductId(cartItem.getProduct().getId());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getProduct().getPrice());
+            orderItems.add(orderItem);
+        }
 
-            // Navigate to success screen
-            Intent intent = new Intent(this, OrderSuccessActivity.class);
-            intent.putExtra("total_amount", cartManager.getTotalPrice().add(new BigDecimal("5.00")).toString());
-            intent.putExtra("shipping_address", shippingAddress);
-            intent.putExtra("payment_method", paymentMethod);
-            startActivity(intent);
-            finish();
-        }, 2000);
+        // Create order object
+        Order order = new Order();
+        order.setItems(orderItems);
+        order.setTotalAmount(totalAmount);
+        // Note: userId will be handled by the backend based on the JWT token
+        // Shipping address and payment method could be added to the order model if needed
+        // For now, we'll pass them as parameters to the success screen
+
+        Log.d(TAG, "Creating order object: " + order.toString());
+        
+        // Make API call to create order
+        orderDataManager.createOrder(order, this);
+    }
+
+    @Override
+    public void onSuccess(Order order) {
+        Log.d(TAG, "Order created successfully: " + order.getId());
+        // Clear cart
+        cartManager.clearCart();
+
+        // Navigate to success screen
+        Intent intent = new Intent(this, OrderSuccessActivity.class);
+        intent.putExtra("order_id", order.getId());
+        intent.putExtra("total_amount", totalAmount.toString());
+        intent.putExtra("shipping_address", etShippingAddress.getText().toString().trim());
+        intent.putExtra("payment_method", getSelectedPaymentMethodName());
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onError(String error) {
+        Log.e(TAG, "Error creating order: " + error);
+        // Hide loading
+        btnPlaceOrder.setEnabled(true);
+        btnPlaceOrder.setText("Place Order");
+
+        // Show error message
+        Snackbar.make(findViewById(android.R.id.content), error, Snackbar.LENGTH_LONG).show();
+    }
+
+    private String getSelectedPaymentMethodName() {
+        int selectedPaymentMethod = rgPaymentMethod.getCheckedRadioButtonId();
+        if (selectedPaymentMethod == R.id.rbCreditCard) {
+            return "Credit Card";
+        } else if (selectedPaymentMethod == R.id.rbCashOnDelivery) {
+            return "Cash on Delivery";
+        }
+        return "";
     }
 }

@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     // Replace with your actual local IP address
-    private static final String BASE_URL = "http://192.168.1.166:8080/"; // CHANGE THIS TO YOUR IP
+    private static final String BASE_URL = "http://192.168.88.30:8080/"; // CHANGE THIS TO YOUR IP
     private static Retrofit retrofit;
 
     public static Retrofit getRetrofitInstance(Context context) {
@@ -37,5 +37,9 @@ public class RetrofitClient {
 
     public static ApiService getApiService(Context context) {
         return getRetrofitInstance(context).create(ApiService.class);
+    }
+    
+    public static OrderApiService getOrderApiService(Context context) {
+        return getRetrofitInstance(context).create(OrderApiService.class);
     }
 }

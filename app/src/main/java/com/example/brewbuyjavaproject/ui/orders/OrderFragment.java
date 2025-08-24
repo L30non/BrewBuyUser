@@ -1,66 +1,135 @@
 package com.example.brewbuyjavaproject.ui.orders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.example.brewbuyjavaproject.Model.Order;
 import com.example.brewbuyjavaproject.R;
+import com.example.brewbuyjavaproject.network.OrderDataManager;
+import com.google.android.material.snackbar.Snackbar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OrderFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class OrderFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+public class OrderFragment extends Fragment implements OrderDataManager.OrderListCallback, OrderListAdapter.OnOrderClickListener {
+    private RecyclerView recyclerOrders;
+    private ProgressBar progressBar;
+    private TextView textError;
+    private TextView textEmpty;
+    
+    private OrderListAdapter adapter;
+    private OrderDataManager orderDataManager;
+    
     public OrderFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment OrderFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static OrderFragment newInstance(String param1, String param2) {
-        OrderFragment fragment = new OrderFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static OrderFragment newInstance() {
+        return new OrderFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        orderDataManager = new OrderDataManager(requireContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_order, container, false);
+        View view = inflater.inflate(R.layout.fragment_order, container, false);
+        
+        initViews(view);
+        setupRecyclerView();
+        loadOrders();
+        
+        return view;
+    }
+    
+    private void initViews(View view) {
+        recyclerOrders = view.findViewById(R.id.recycler_orders);
+        progressBar = view.findViewById(R.id.progress_bar);
+        textError = view.findViewById(R.id.text_error);
+        textEmpty = view.findViewById(R.id.text_empty);
+    }
+    
+    private void setupRecyclerView() {
+        adapter = new OrderListAdapter(new ArrayList<>());
+        adapter.setOnOrderClickListener(this);
+        recyclerOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerOrders.setAdapter(adapter);
+    }
+    
+    private void loadOrders() {
+        showLoading(true);
+        orderDataManager.getMyOrders(this);
+    }
+    
+    private void showLoading(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        recyclerOrders.setVisibility(show ? View.GONE : View.VISIBLE);
+        textError.setVisibility(View.GONE);
+        textEmpty.setVisibility(View.GONE);
+    }
+    
+    private void showError(String message) {
+        progressBar.setVisibility(View.GONE);
+        recyclerOrders.setVisibility(View.GONE);
+        textError.setVisibility(View.VISIBLE);
+        textEmpty.setVisibility(View.GONE);
+        
+        // Show a Snackbar with the error message
+        if (getView() != null) {
+            Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+        }
+    }
+    
+    private void showEmpty() {
+        progressBar.setVisibility(View.GONE);
+        recyclerOrders.setVisibility(View.GONE);
+        textError.setVisibility(View.GONE);
+        textEmpty.setVisibility(View.VISIBLE);
+    }
+    
+    private void showOrders(List<Order> orders) {
+        progressBar.setVisibility(View.GONE);
+        recyclerOrders.setVisibility(View.VISIBLE);
+        textError.setVisibility(View.GONE);
+        textEmpty.setVisibility(orders.isEmpty() ? View.VISIBLE : View.GONE);
+        
+        adapter.setOrders(orders);
+    }
+
+    @Override
+    public void onSuccess(List<Order> orders) {
+        if (isAdded()) { // Check if fragment is still attached to activity
+            showOrders(orders);
+        }
+    }
+
+    @Override
+    public void onError(String error) {
+        if (isAdded()) { // Check if fragment is still attached to activity
+            showError(error);
+        }
+    }
+
+    @Override
+    public void onOrderClick(Order order) {
+        // Navigate to order details screen
+        Intent intent = new Intent(requireContext(), OrderDetailsActivity.class);
+        intent.putExtra("order_id", order.getId());
+        startActivity(intent);
     }
 }

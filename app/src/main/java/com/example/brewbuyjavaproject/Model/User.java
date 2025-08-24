@@ -1,6 +1,8 @@
 // app/src/main/java/com/example/brewbuyjavaproject/Model/User.java
 package com.example.brewbuyjavaproject.Model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
     private Long id;
     private String username;
@@ -8,6 +10,7 @@ public class User {
     private String password;
     private String fullName;
     private String phone;
+    @SerializedName("token")
     private String token;
 
     // Default constructor

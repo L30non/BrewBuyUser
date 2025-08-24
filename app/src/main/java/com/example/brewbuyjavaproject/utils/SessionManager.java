@@ -24,7 +24,7 @@ public class SessionManager {
 
     public void createLoginSession(int userId, String username, String email, String token) {
         android.util.Log.d("SessionManager", "Creating login session with token: " + token);
-         editor.putBoolean(KEY_IS_LOGGED_IN, true);
+        editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USERNAME, username);
         editor.putString(KEY_USER_EMAIL, email);
@@ -36,22 +36,28 @@ public class SessionManager {
     }
 
     public boolean isLoggedIn() {
-        return pref.getBoolean(KEY_IS_LOGGED_IN, false);
+        boolean isLoggedIn = pref.getBoolean(KEY_IS_LOGGED_IN, false);
+        android.util.Log.d("SessionManager", "isLoggedIn: " + isLoggedIn);
+        return isLoggedIn;
     }
 
     public int getUserId() {
-        return pref.getInt(KEY_USER_ID, -1);
+        int userId = pref.getInt(KEY_USER_ID, -1);
+        android.util.Log.d("SessionManager", "getUserId: " + userId);
+        return userId;
     }
 
     public String getUsername() {
-        return pref.getString(KEY_USERNAME, null);
+        String username = pref.getString(KEY_USERNAME, null);
+        android.util.Log.d("SessionManager", "getUsername: " + username);
+        return username;
     }
 
     public String getUserEmail() {
-        return pref.getString(KEY_USER_EMAIL, null);
+        String email = pref.getString(KEY_USER_EMAIL, null);
+        android.util.Log.d("SessionManager", "getUserEmail: " + email);
+        return email;
     }
-
-
 
     public String getToken() {
         String token = pref.getString(KEY_JWT_TOKEN, null);
@@ -62,5 +68,6 @@ public class SessionManager {
     public void logoutUser() {
         editor.clear();
         editor.commit();
+        android.util.Log.d("SessionManager", "User logged out");
     }
 }

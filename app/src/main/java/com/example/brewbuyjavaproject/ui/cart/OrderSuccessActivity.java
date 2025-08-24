@@ -12,8 +12,6 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.brewbuyjavaproject.MainActivity;
 import com.example.brewbuyjavaproject.R;
 
-import java.util.Random;
-
 public class OrderSuccessActivity extends AppCompatActivity {
     private TextView tvOrderId, tvTotalAmount, tvShippingAddress, tvPaymentMethod;
     private Button btnContinueShopping;
@@ -27,15 +25,13 @@ public class OrderSuccessActivity extends AppCompatActivity {
         setupToolbar();
 
         // Get order details from intent
+        Long orderId = getIntent().getLongExtra("order_id", -1);
         String totalAmount = getIntent().getStringExtra("total_amount");
         String shippingAddress = getIntent().getStringExtra("shipping_address");
         String paymentMethod = getIntent().getStringExtra("payment_method");
 
-        // Generate random order ID
-        String orderId = "ORD-" + new Random().nextInt(1000000);
-
         // Display order details
-        tvOrderId.setText(orderId);
+        tvOrderId.setText("ORD-" + orderId);
         tvTotalAmount.setText("$" + totalAmount);
         tvShippingAddress.setText(shippingAddress);
         tvPaymentMethod.setText(paymentMethod);
